@@ -310,8 +310,8 @@ class Player(GeneralMovingBody):
     def __init__(self, surface, size, type=1, showing=True):
         GeneralMovingBody.__init__(self,surface=surface,size=size,showing=True)
         
-        self.relax = random.random() # 0 = sleep, 1 = desperate
-
+        self.relax = 1 # 0 = sleep, 1 = desperate
+        print type;
         if type==1:
             name = 'guy_'
             self.color = pygame.Color(0,100,230)

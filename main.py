@@ -14,7 +14,7 @@ if not pygame.font:  print('Note: fonts disabled')
 def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None, playing=False, online=False):
     """ Run the simulation (e.g., game) with all the creatures (e.g., players and balls). """
     number_of_balls = 1
-    number_of_players = 2
+    number_of_players = 8
     number_of_skulls = 0
 
 
@@ -54,7 +54,7 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
         balls.append(Ball(surface=general.surface, radius=6, showing=showing))
 
     for i in xrange(0,number_of_players):
-        players.append( Player(general.surface,(20,20),number_of_players-i, showing) )
+        players.append( Player(general.surface,(20,20),(number_of_players-i)%2 + 1, showing) )
 
     for i in xrange(0,number_of_skulls):
         skulls.append( CreatureBodyComputer( surface=general.surface ) )
