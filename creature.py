@@ -307,7 +307,7 @@ class Ball(GeneralMovingBody):
 # {{{ Player
 class Player(GeneralMovingBody):
     """ Everything a player needs to know."""
-    def __init__(self, surface, size, type=1, showing=True):
+    def __init__(self, surface, size, initial_pose, type=1,showing=True):
         GeneralMovingBody.__init__(self,surface=surface,size=size,showing=True)
         
         self.relax = 1 # 0 = sleep, 1 = desperate
@@ -336,7 +336,7 @@ class Player(GeneralMovingBody):
         self.guy_left_running1 = pygame.transform.flip(self.guy_right_running1, True, False)
         self.guy_left_running2 = pygame.transform.flip(self.guy_right_running2, True, False)
 
-        self.initial_centre_pos = [width/2.0, height/3.0 * type]
+        self.initial_centre_pos = initial_pose
         self.reset()
 
         self.move_turn = math.floor(random.random()*100)
