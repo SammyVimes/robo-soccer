@@ -74,7 +74,6 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
     for i in xrange(0, number_of_skulls):
         skulls.append(CreatureBodyComputer(surface=general.surface))
 
-    ai_state = ai.State(players[0], players[1], balls[0])
     ais = [ai.Ai(p, goal1, goal2) for p in players[1:]]
 
     if showing: clock = pygame.time.Clock()
@@ -164,9 +163,19 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
                     new_key = True
             if online: net.updatePlayers(new_key, isClient, socket, players)
 
-        ai_state.update()
+        nearest_player = players[0]
+        nearest_distance = general.distance(nearest_player.get_centre_pos(), balls[0].get_centre_pos())
+
+        for player in players[1:]:
+            _distance = general.distance(player.get_centre_pos(), balls[0].get_centre_pos())
+            if _distance < nearest_distance:
+                nearest_player = player
+                nearest_distance = _distance
+
 
         for _ai in ais:
+            ai_state = ai.State(nearest_player, _ai.player, balls[0])
+            ai_state.update()
             _ai.do(ai_state)
 
         for player in players:
