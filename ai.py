@@ -3,6 +3,8 @@ import random
 import math
 import general
 import creature
+
+
 class Ai:
     def __init__(self, player, goal1=None, goal2=None):
         if not isinstance(player, creature.Player):
@@ -61,7 +63,7 @@ class Ai:
         #elif state.what_area_player2 == [False,True]:
         #    self.player.acc = [0,-0.01]
 
-    def run_to_back_of_the_ball():
+    def run_to_back_of_the_ball(self):
         pass
 
     def go_to(self, pos):
@@ -119,6 +121,38 @@ class Ai:
         else:
             if dist < 100:
                 self.player.vel_threshold = general.PLAYER_VEL_LIMIT * dist / 20.0
+
+
+
+class GoalkeeperAi(Ai):
+    def do(self, state):
+        if not isinstance(state, State):
+            print("AI says: You should give me a State object!")
+            return
+
+        self.time += 1
+        self.state = state
+
+        blocked_rects = [self.goal1.rect, self.goal2.rect, self.state.player1.rect]
+        player_centre_pos = self.player.get_centre_pos()
+        self.astar = AStar(player_centre_pos, self.state.ball.get_centre_pos(), self.astar_size,
+                           blocked_rects)
+
+        path = self.astar.get_shortest_path()
+
+        self.player.relax = 1 - 2 * abs(1.0 * player_centre_pos[1] / general.height - 0.5)
+
+        if len(path) >= 2:
+            path_ = general.Array(path[1]) - [0, 0]
+            path_[1] = player_centre_pos[1]
+            if path_[0] < 200 or path_[0] > 400:
+                path_[0] = player_centre_pos[0]
+            self.go_to(path_)
+
+        ## SHOOT:
+        if self.state.ball.get_centre_pos()[1] < general.height - 30:
+            if self.state.ball.get_centre_pos()[1] - player_centre_pos[1] > 5:
+                self.state.ball.getShooted(self.player, 1)
 
 class AStar:
     def __init__(self, start_pixel_pos, target_pixel_pos, size, blocked_rects=[]):

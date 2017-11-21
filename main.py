@@ -17,7 +17,7 @@ if not pygame.font:  print('Note: fonts disabled')
 def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None, playing=False, online=False):
     """ Run the simulation (e.g., game) with all the creatures (e.g., players and balls). """
     number_of_balls = 1
-    number_of_players = 8
+    number_of_players = 10
     number_of_skulls = 0
 
     balls = list()
@@ -68,13 +68,23 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
                 player_pos = [width / 2.0, height / 3.0 * (1.0 if player_team == 0 else 2)]
             elif player_role == 3:
                 player_pos = [(width * 3.0) / 4.0, height / 6.0 * (1.0 if player_team == 0 else 5)]
+            elif player_role == 4:
+                player_pos = [width / 2.0, height / 7 * (1.0 if player_team == 0 else 6)]
 
             players.append(Player(general.surface, (20, 20), player_pos, player_team + 1, showing))
 
     for i in xrange(0, number_of_skulls):
         skulls.append(CreatureBodyComputer(surface=general.surface))
 
-    ais = [ai.Ai(p, goal1, goal2) for p in players[1:]]
+    ais = []
+    for idx in xrange(len(players) - 1):
+        i = idx + 1
+        _ai = None
+        if i == 4 or i == 9:
+            _ai = ai.GoalkeeperAi(players[i], goal1, goal2)
+        else:
+            _ai = ai.Ai(players[i], goal1, goal2)
+        ais.append(_ai)
 
     if showing: clock = pygame.time.Clock()
 
