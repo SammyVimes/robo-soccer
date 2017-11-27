@@ -10,8 +10,20 @@ from field import *
 import ai
 from std_msgs.msg import String
 
-if not pygame.font:  print('Note: fonts disabled')
 
+def on_ai_msg(d):
+    players = d['players']
+    goal1 = d['goal1']
+    goal2 = d['goals2']
+    field = d['field']
+    counter = d['counter']
+    for player in players:
+        player.collidingGoal(goal1)
+        player.collidingGoal(goal2)
+        player.move(general.surface, field, counter)
+
+
+if not pygame.font:  print('Note: fonts disabled')
 
 if not pygame.mixer: print('Note: sound disabled')
 
@@ -23,6 +35,7 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
     number_of_skulls = 0
     rospy.init_node('game_server')
     rospy.Publisher('start_pub', String, queue_size=20)
+    ai_listener = rospy.Subscriber('ai_pub', String, on_ai_msg)
 
     balls = list()
     players = list()
@@ -186,7 +199,6 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
                 nearest_player = player
                 nearest_distance = _distance
 
-
         for _ai in ais:
             ai_state = ai.State(nearest_player, _ai.player, balls[0])
             ai_state.update()
@@ -220,17 +232,17 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
 
             # to the pipe (tirake darvaze):
             is_colliding_goal_pipe_top_right = (
-            ball.vel[1] < 0 and (diff(ball_centre[1], goal_size[1]) < ball.radius) and (
-            diff(ball_centre[0], (width / 2 + goal_size[0] / 2)) < 3))
+                ball.vel[1] < 0 and (diff(ball_centre[1], goal_size[1]) < ball.radius) and (
+                    diff(ball_centre[0], (width / 2 + goal_size[0] / 2)) < 3))
             is_colliding_goal_pipe_top_left = (
-            ball.vel[1] < 0 and (diff(ball_centre[1], goal_size[1]) < ball.radius) and (
-            diff(ball_centre[0], (width / 2 - goal_size[0] / 2)) < 3))
+                ball.vel[1] < 0 and (diff(ball_centre[1], goal_size[1]) < ball.radius) and (
+                    diff(ball_centre[0], (width / 2 - goal_size[0] / 2)) < 3))
             is_colliding_goal_pipe_bottom_right = (
-            ball.vel[1] > 0 and (diff(ball_centre[1], (height - goal_size[1])) < ball.radius) and (
-            diff(ball_centre[0], (width / 2 + goal_size[0] / 2)) < 3))
+                ball.vel[1] > 0 and (diff(ball_centre[1], (height - goal_size[1])) < ball.radius) and (
+                    diff(ball_centre[0], (width / 2 + goal_size[0] / 2)) < 3))
             is_colliding_goal_pipe_bottom_left = (
-            ball.vel[1] > 0 and (diff(ball_centre[1], (height - goal_size[1])) < ball.radius) and (
-            diff(ball_centre[0], (width / 2 - goal_size[0] / 2)) < 3))
+                ball.vel[1] > 0 and (diff(ball_centre[1], (height - goal_size[1])) < ball.radius) and (
+                    diff(ball_centre[0], (width / 2 - goal_size[0] / 2)) < 3))
 
             if is_colliding_goal_pipe_top_right or is_colliding_goal_pipe_top_left or is_colliding_goal_pipe_bottom_right or is_colliding_goal_pipe_bottom_left:
                 ball.vel[1] = - ball.vel[1]

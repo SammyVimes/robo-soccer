@@ -12,6 +12,7 @@ class AIController:
     def __init__(self, quantity):
         self.quantity = quantity
         start_listener = rospy.Subscriber('start_pub', String, self.start)
+        ai_pub = rospy.Publisher('ai_pub', String, queue_size=20)
         srv = rospy.Service('ai_service', AI, self.update)
         self.ais = []
 
