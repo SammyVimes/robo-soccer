@@ -94,6 +94,19 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf2.cfg
 # )
 
+
+
+ add_service_files(
+   FILES
+   AI.srv
+)
+
+
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -105,8 +118,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES robosoccer
-#  CATKIN_DEPENDS message_generation rospy std_msgs visualization_msgs
+#  LIBRARIES patientpy
+  CATKIN_DEPENDS message_runtime message_generation rospy std_msgs
 #  DEPENDS system_lib
 )
 

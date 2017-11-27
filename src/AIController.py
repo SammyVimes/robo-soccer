@@ -4,18 +4,20 @@ import sys
 from random import randint
 from time import sleep
 import ai
+from std_msgs.msg import String
+from robosoccer.srv import *
 
 class AIController:
 
     def __init__(self, quantity):
         self.quantity = quantity
-        start_listener = rospy.Subscriber('start_pub', str, self.start)
+        start_listener = rospy.Subscriber('start_pub', String, self.start)
         srv = rospy.Service('ai_service', AI, self.update)
         self.ais = []
 
     def start(self, start_data):
         # type: (str) -> None
-        for idx in xrange(len(self.quantity) - 1):
+        for idx in range(len(self.quantity) - 1):
             i = idx + 1
             _ai = None
             if i == 4 or i == 9:
@@ -26,7 +28,12 @@ class AIController:
 
     def update(self, req):
         # type: (AIRequest) -> str
-        pass
+        res = ""
+        for _ai in self.ais:
+            ai_state = ai.State(self.ais[0], _ai.player, balls[0])
+            ai_state.update()
+            res += _ai.do(ai_state)
+        return res
 
 if __name__ == '__main__':
     try:

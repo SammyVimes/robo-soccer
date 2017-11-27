@@ -3,10 +3,12 @@
 import pygame, sys
 import general
 import random
+import rospy
 from pygame.locals import *
 from creature import *
 from field import *
 import ai
+from std_msgs.msg import String
 
 if not pygame.font:  print('Note: fonts disabled')
 
@@ -19,6 +21,8 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
     number_of_balls = 1
     number_of_players = 10
     number_of_skulls = 0
+    rospy.init_node('game_server')
+    rospy.Publisher('start_pub', String, queue_size=20)
 
     balls = list()
     players = list()

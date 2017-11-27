@@ -1,7 +1,6 @@
 <launch>
-    <node name="input" pkg="robosoccer" type="PlayerController.py" output="screen" required="true"/>
-    <node name="server" pkg="robosoccer" type="Game.py" output="screen" required="true"/>
+    <node name="server" pkg="robosoccer" type="start.py" output="screen" required="true"/>
     <node name="ai1" pkg="robosoccer" type="AIController.py" output="screen">
-	    <param name="quantity" value="robot1" />
+	    <param name="quantity" value="10" />
     </node>
 </launch>
