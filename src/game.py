@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # {{{ Imports
 import pygame, sys
 import general
@@ -10,8 +11,7 @@ import ai
 if not pygame.font:  print('Note: fonts disabled')
 
 
-# if not pygame.mixer: print('Note: sound disabled')
-# }}}
+if not pygame.mixer: print('Note: sound disabled')
 
 
 def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None, playing=False, online=False):
@@ -52,11 +52,11 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
         goal1 = field.getGoal1()
         goal2 = field.getGoal2()
 
-    for i in xrange(0, number_of_balls):
+    for i in range(0, number_of_balls):
         balls.append(Ball(surface=general.surface, radius=6, showing=showing))
 
-    for player_team in xrange(0, 2):
-        for player_role in xrange(0, number_of_players / 2):
+    for player_team in range(0, 2):
+        for player_role in range(0, number_of_players // 2):
 
             player_pos = [0, 0]
 
@@ -73,11 +73,11 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
 
             players.append(Player(general.surface, (20, 20), player_pos, player_team + 1, showing))
 
-    for i in xrange(0, number_of_skulls):
+    for i in range(0, number_of_skulls):
         skulls.append(CreatureBodyComputer(surface=general.surface))
 
     ais = []
-    for idx in xrange(len(players) - 1):
+    for idx in range(len(players) - 1):
         i = idx + 1
         _ai = None
         if i == 4 or i == 9:
@@ -90,7 +90,7 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
 
     counter = 0
 
-    while counter < time_length or time_length is None:
+    while time_length is None or counter < time_length:
         """ Main loop of the simulation (e.g., game). """
         moveCamera(balls[0])
         stoppingx_event = False

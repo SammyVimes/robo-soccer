@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pygame, sys, os
 from pygame.locals import *
 import math
@@ -27,7 +28,7 @@ class Array(list):
     def __add__(self, other):
         if isinstance(other, list):
             if len(other) != len(self): print("arrays must be the same size"); exit
-            for i in xrange(len(self)):
+            for i in range(len(self)):
                 self[i] += other[i]
             return self
         else:
@@ -36,7 +37,7 @@ class Array(list):
     def __sub__(self, other):
         if isinstance(other, list):
             if len(other) != len(self): print("arrays must be the same size"); exit
-            for i in xrange(len(self)):
+            for i in range(len(self)):
                 self[i] -= other[i]
             return self
         else:
@@ -45,7 +46,7 @@ class Array(list):
     def __mul__(self, other):
         if isinstance(other, list):
             if len(other) != len(self): print("arrays must be the same size"); exit
-            for i in xrange(len(self)):
+            for i in range(len(self)):
                 self[i] *= other[i]
             return self
         else:
@@ -54,7 +55,7 @@ class Array(list):
     def __div__(self, other):
         if isinstance(other, list):
             if len(other) != len(self): print("arrays must be the same size"); exit
-            for i in xrange(len(self)):
+            for i in range(len(self)):
                 self[i] /= other[i]
             return self
         else:
@@ -82,9 +83,9 @@ def load_image(filepath, scale=None, colorkey=None):
         image = pygame.image.load(fullname)
         if scale is not None:
             image = pygame.transform.scale(image, scale)
-    except pygame.error, message:
+    except pygame.error as message:
         print('Cannot load image: ' + filepath)
-        raise SystemExit, message
+        raise SystemExit(message)
     """ convert per pixel """
     image = image.convert_alpha()
     if colorkey is not None:

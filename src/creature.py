@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # {{{ Imports
 import pygame, os
 import random
@@ -283,7 +284,7 @@ class Ball(GeneralMovingBody):
         """ Update ball's position. """
         limit = [self.limitx, self.limity]
         pos = self.get_pos()
-        for i in xrange(0,2):
+        for i in range(0,2):
             self.vel[i] += - self.vel[i]/70.0
             if self.vel[i] <= 0.01 and self.vel[i] >= -0.01:
                 self.vel[i] = 0
@@ -311,7 +312,7 @@ class Player(GeneralMovingBody):
         GeneralMovingBody.__init__(self,surface=surface,size=size,showing=True)
         
         self.relax = 1 # 0 = sleep, 1 = desperate
-        print type;
+        print(type)
         if type==1:
             name = 'guy_'
             self.color = pygame.Color(0,100,230)
@@ -441,7 +442,7 @@ class Player(GeneralMovingBody):
         """ Update player's position. """
         limit = [self.limitx, self.limity]
         pos = self.get_pos()
-        for i in xrange(0,2):
+        for i in range(0,2):
             self.vel[i] = self.vel[i] + self.acc[i]
             if self.vel[i] <= 0.001 and self.vel[i] >= -0.001:
                 self.vel[i] = 0

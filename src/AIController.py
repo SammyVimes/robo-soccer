@@ -10,7 +10,7 @@ class AIController:
     def __init__(self, quantity):
         self.quantity = quantity
         start_listener = rospy.Subscriber('start_pub', str, self.start)
-        srv = rospy.Service('doctor_service', AI, self.update)
+        srv = rospy.Service('ai_service', AI, self.update)
         self.ais = []
 
     def start(self, start_data):
