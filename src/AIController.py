@@ -17,6 +17,9 @@ class AIController:
 
     def start(self, start_data):
         # type: (str) -> None
+        players = start_data['players']
+        goal1 = start_data['goal1']
+        goal2 = start_data['goal2']
         for idx in range(len(self.quantity) - 1):
             i = idx + 1
             _ai = None
