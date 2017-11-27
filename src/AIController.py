@@ -30,7 +30,9 @@ class AIController:
             self.ais.append(_ai)
 
     def update(self, req):
-        # type: (AIRequest) -> str
+        # type: (AIRequest) -> AIResponse
+        m_player = req['m_player']
+        balls = req['balls']
         res = ""
         for _ai in self.ais:
             ai_state = ai.State(self.ais[0], _ai.player, balls[0])
