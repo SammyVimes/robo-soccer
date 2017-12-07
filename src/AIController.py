@@ -9,42 +9,22 @@ from robosoccer.srv import *
 
 class AIController:
 
-    def __init__(self, quantity):
-        self.quantity = quantity
-        start_listener = rospy.Subscriber('start_pub', String, self.start)
-        ai_pub = rospy.Publisher('ai_pub', String, queue_size=20)
-        srv = rospy.Service('ai_service', AI, self.update)
-        self.ais = []
+    def __init__(self, id):
+        self.id = id
+        self.goalkeeper = id == 4 or id == 9
+        start_listener = rospy.Subscriber('ai_request' + str(id), String, self.goalkeeper if self.goalkeeper else self.player)
+        #srv = rospy.Service('ai_service', AI, self.update)
 
-    def start(self, start_data):
-        # type: (str) -> None
-        players = start_data['players']
-        goal1 = start_data['goal1']
-        goal2 = start_data['goal2']
-        for idx in range(len(self.quantity) - 1):
-            i = idx + 1
-            _ai = None
-            if i == 4 or i == 9:
-                _ai = ai.GoalkeeperAi(players[i], goal1, goal2)
-            else:
-                _ai = ai.Ai(players[i], goal1, goal2)
-            self.ais.append(_ai)
+    def goalkeeper(self):
+        pass
 
-    def update(self, req):
-        # type: (AIRequest) -> AIResponse
-        m_player = req['m_player']
-        balls = req['balls']
-        res = ""
-        for _ai in self.ais:
-            ai_state = ai.State(self.ais[0], _ai.player, balls[0])
-            ai_state.update()
-            res += _ai.do(ai_state)
-        return res
+    def player(self):
+        pass
 
 if __name__ == '__main__':
     try:
         rospy.init_node('ai')
-        quantity = rospy.get_param('~quantity')
-        aiController = AIController(quantity)
+        id = rospy.get_param('~id')
+        aiController = AIController(id)
     except rospy.ROSInterruptException:
         pass

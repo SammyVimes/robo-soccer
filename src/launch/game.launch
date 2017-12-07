@@ -1,6 +1,38 @@
 <launch>
     <node name="server" pkg="robosoccer" type="start.py" output="screen" required="true"/>
+
     <node name="ai1" pkg="robosoccer" type="AIController.py" output="screen">
-	    <param name="quantity" value="10" />
+	    <param name="id" value="1" />
     </node>
+
+    <node name="ai2" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="2" />
+    </node>
+
+    <node name="ai3" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="3" />
+    </node>
+    <node name="ai4" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="4" />
+    </node>
+    <node name="ai5" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="5" />
+    </node>
+    <node name="ai6" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="6" />
+    </node>
+    <node name="ai7" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="7" />
+    </node>
+    <node name="ai8" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="8" />
+    </node>
+    <node name="ai9" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="9" />
+    </node>
+    <node name="ai10" pkg="robosoccer" type="AIController.py" output="screen">
+	    <param name="id" value="10" />
+    </node>
+
+
 </launch>

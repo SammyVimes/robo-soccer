@@ -4,6 +4,7 @@ import pygame, sys
 import general
 import random
 import rospy
+import json
 from pygame.locals import *
 from creature import *
 from field import *
@@ -36,6 +37,10 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
     rospy.init_node('game_server')
     rospy.Publisher('start_pub', String, queue_size=20)
     ai_listener = rospy.Subscriber('ai_pub', String, on_ai_msg)
+
+    ai_pubs = []
+    for idx in range(1, number_of_players):
+        ai_pubs.append(rospy.Publisher('ai_request' + str(idx), String, queue_size=20))
 
     balls = list()
     players = list()
@@ -199,10 +204,12 @@ def creaturesTest(rootNode1_acc, rootNode2_acc, showing=False, time_length=None,
                 nearest_player = player
                 nearest_distance = _distance
 
-        for _ai in ais:
+        for (idx, _ai) in enumerate(ais):
             ai_state = ai.State(nearest_player, _ai.player, balls[0])
             ai_state.update()
-            _ai.do(ai_state)
+            jhi_est = json.dumps(ai_state.__dict__)
+            ai_pubs[idx].publish(jhi_est)
+            #_ai.do(ai_state)
 
         for player in players:
             player.collidingGoal(goal1)
