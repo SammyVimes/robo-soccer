@@ -224,7 +224,7 @@ class Game:
             for (idx, _ai) in enumerate(ais):
                 ball_coord = balls[0].get_pos()
                 ai_state = SAIState((ball_coord[0], ball_coord[1]), p_coords)
-                jhi_est = json.dumps(ai_state)
+                jhi_est = json.dumps(ai_state.__dict__)
                 ai_pubs[idx].publish(jhi_est)
                 # _ai.do(ai_state)
 
