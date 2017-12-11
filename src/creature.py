@@ -310,7 +310,7 @@ class Player(GeneralMovingBody):
     """ Everything a player needs to know."""
     def __init__(self, surface, size, initial_pose, type=1,showing=True):
         GeneralMovingBody.__init__(self,surface=surface,size=size,showing=True)
-        
+        self.type = type
         self.relax = 1 # 0 = sleep, 1 = desperate
         print(type)
         if type==1:
