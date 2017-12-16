@@ -16,6 +16,9 @@ import pygame
 class AIController:
 
     def __init__(self, id):
+        rospy.wait_for_service('move_service')
+        self.move_service = rospy.ServiceProxy('move_service', MovePlayer)
+
         self.id = id
         self.is_goalkeeper = id == 4 or id == 9
         self.astar_size = [30,40]
@@ -46,6 +49,14 @@ class AIController:
         this_player = pls[self.id]
         blocked_rects = [self.goal1, self.goal2, self.to_rect(this_player[3])]
         self.astar = AStar([this_player[1], this_player[2]], ball, self.astar_size, blocked_rects)
+
+        path = self.astar.get_shortest_path()
+
+        if len(path) >= 2:
+            self.go_to(general.Array(path[1]) - [0, 0])
+
+    def go_to(self, param):
+        self.move_service(self.id, param[0], param[1])
         pass
 
 

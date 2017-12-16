@@ -344,6 +344,54 @@ class Player(GeneralMovingBody):
         self.is_contact = False
         self.standing_direction = 'front'
 
+    def go_to(self, pos):
+        player_pos = self.get_centre_pos()
+        dist = general.distance(player_pos, pos)
+
+        if dist < 10:
+            ## We're there!
+            self.vel = [0, 0]
+            self.acc = [0, 0]
+            self.gate_freq = 0
+            return True
+
+        max_dist = math.sqrt(general.width ** 2 + general.height ** 2)
+        gate_freq = (1.0 * dist / max_dist) * 1 + 1
+
+        sin_old = math.sin((self.time) / 180.0 * general.PI)
+        self.time = self.time + 100 * gate_freq
+        sin_new = math.sin((self.time) / 180.0 * general.PI)
+
+        if sin_old * sin_new <= 0:
+            diff_x = pos[0] - player_pos[0]
+            diff_y = pos[1] - player_pos[1]
+            # self.player.vel[0] = diff_x / 20.0
+            # self.player.vel[1] = diff_y / 20.0
+            # return
+
+            new_acc = [0, 0]
+            fire_acc = self.fire_acc
+
+            if diff_x < 0:
+                new_acc[0] = - fire_acc
+            elif diff_x > 0:
+                new_acc[0] = fire_acc
+
+            if diff_y < 0:
+                new_acc[1] = - fire_acc
+            elif diff_y > 0:
+                new_acc[1] = fire_acc
+
+            self.acc[0] = new_acc[0]
+            self.acc[1] = new_acc[1]
+
+        if self.relax > 0.5:
+            if dist < 100:
+                self.vel_threshold = general.PLAYER_VEL_LIMIT * dist / 25.0
+        else:
+            if dist < 100:
+                self.vel_threshold = general.PLAYER_VEL_LIMIT * dist / 20.0
+
     def move(self, surface, field, time, cameraPos, goal_size):
         """ Move the player. """
         """ stopping the player, if keyup """
