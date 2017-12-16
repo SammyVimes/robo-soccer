@@ -8,10 +8,12 @@ import json
 from pygame.locals import *
 from creature import *
 from field import *
+import Data
 import ai
 from Data import SAIState
 from std_msgs.msg import String
 from robosoccer.srv import *
+import json_tricks
 
 
 def on_ai_msg(d):
@@ -32,11 +34,11 @@ if not pygame.mixer: print('Note: sound disabled')
 
 class Game:
 
-    def move_player(self):
-        pass
+    def move_player(self, move_player_request):
+        print(move_player_request)
 
-    def shoot_ball(self):
-        pass
+    def shoot_ball(self, shoot_ball_request):
+        print(shoot_ball_request)
 
     def start(self, rootNode1_acc, rootNode2_acc, showing=False, time_length=None, playing=False, online=False):
         """ Run the simulation (e.g., game) with all the creatures (e.g., players and balls). """
@@ -44,7 +46,7 @@ class Game:
         number_of_players = 10
         number_of_skulls = 0
         rospy.init_node('game_server')
-        rospy.Publisher('start_pub', String, queue_size=20)
+        start_pub = rospy.Publisher('start_pub', String, queue_size=20)
         ai_listener = rospy.Subscriber('ai_pub', String, on_ai_msg)
         shoot_service = rospy.Service('shoot_service', ShootBall, self.shoot_ball)
         move_service = rospy.Service('move_service', MovePlayer, self.move_player)
@@ -84,6 +86,12 @@ class Game:
             field = Field()
             goal1 = field.getGoal1()
             goal2 = field.getGoal2()
+
+        goals = {"goal1": json.dumps(Data.Rect(goal1.rect).__dict__), "goal2": json.dumps(Data.Rect(goal2.rect).__dict__)}
+
+        rospy.sleep(1)
+
+        start_pub.publish(json.dumps(goals))
 
         for i in range(0, number_of_balls):
             balls.append(Ball(surface=general.surface, radius=6, showing=showing))
@@ -219,7 +227,7 @@ class Game:
             for player in players:
                 type = player.type
                 coords = player.get_pos()
-                p_coords.append((type, coords[0], coords[1]))
+                p_coords.append((type, coords[0], coords[1], Data.Rect(player.rect).__dict__))
 
             for (idx, _ai) in enumerate(ais):
                 ball_coord = balls[0].get_pos()
