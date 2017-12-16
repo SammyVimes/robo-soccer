@@ -7,6 +7,7 @@ import ai
 from std_msgs.msg import String
 from robosoccer.srv import *
 import general
+import pydevd
 import math
 from field import Goal
 import json
@@ -17,7 +18,9 @@ class AIController:
 
     def __init__(self, id):
         rospy.wait_for_service('move_service')
+        rospy.wait_for_service('shoot_service')
         self.move_service = rospy.ServiceProxy('move_service', MovePlayer)
+        self.shoot_service = rospy.ServiceProxy('shoot_service', ShootBall)
 
         self.id = id
         self.is_goalkeeper = id == 4 or id == 9
@@ -38,26 +41,47 @@ class AIController:
         self.goal1 = self.to_rect(json.loads(goal1_rect))
         self.goal2 = self.to_rect(json.loads(goal2_rect))
 
+
     def goalkeeper(self, ai_state):
         ai_state = json.loads(ai_state.data)
-        pass
+        pls = ai_state["players_coords"]
+        ball = ai_state["ball_coords"]
+        self.goal1 = self.to_rect(ai_state["goal1"])
+        self.goal2 = self.to_rect(ai_state["goal2"])
+        this_player = pls[self.id]
+        blocked_rects = [self.goal1, self.goal2]
+        self.astar = AStar([this_player[1], this_player[2]], ball, self.astar_size, blocked_rects)
+
+        path = self.astar.get_shortest_path()
+        player_centre_pos = [this_player[1], this_player[2]]
+        if len(path) >= 2:
+            path_ = general.Array(path[1]) - [0, 0]
+            path_[1] = player_centre_pos[1]
+            if path_[0] < 200 or path_[0] > 400:
+                path_[0] = player_centre_pos[0]
+            self.go_to(path_)
 
     def player(self, ai_state):
         ai_state = json.loads(ai_state.data)
         pls = ai_state["players_coords"]
         ball = ai_state["ball_coords"]
+        self.goal1 = self.to_rect(ai_state["goal1"])
+        self.goal2 = self.to_rect(ai_state["goal2"])
         this_player = pls[self.id]
-        blocked_rects = [self.goal1, self.goal2, self.to_rect(this_player[3])]
+        blocked_rects = [self.goal1, self.goal2]
         self.astar = AStar([this_player[1], this_player[2]], ball, self.astar_size, blocked_rects)
 
         path = self.astar.get_shortest_path()
-
         if len(path) >= 2:
             self.go_to(general.Array(path[1]) - [0, 0])
 
+        player_centre_pos = [this_player[1], this_player[2]]
+        if ball[1] < general.height - 30:
+            if ball[1] - player_centre_pos[1] > 5:
+                self.shoot_service(self.id)
+
     def go_to(self, param):
         self.move_service(self.id, param[0], param[1])
-        pass
 
 
 class AStar:
@@ -230,6 +254,7 @@ class Node(object):
 
 if __name__ == '__main__':
     try:
+        # pydevd.settrace('localhost', port=5559, stdoutToServer=True, stderrToServer=True)
         rospy.init_node('ai')
         id = rospy.get_param('~id')
         aiController = AIController(id)

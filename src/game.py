@@ -35,10 +35,13 @@ if not pygame.mixer: print('Note: sound disabled')
 class Game:
 
     def move_player(self, move_player_request):
-        print(move_player_request)
+        y_ = [move_player_request.x, move_player_request.y]
+        self.players[move_player_request.player].go_to(y_)
+        return ""
 
     def shoot_ball(self, shoot_ball_request):
-        print(shoot_ball_request)
+        self.balls[0]._getKicked(self.players[shoot_ball_request.player])
+        return ""
 
     def start(self, rootNode1_acc, rootNode2_acc, showing=False, time_length=None, playing=False, online=False):
         """ Run the simulation (e.g., game) with all the creatures (e.g., players and balls). """
@@ -48,15 +51,15 @@ class Game:
         rospy.init_node('game_server')
         start_pub = rospy.Publisher('start_pub', String, queue_size=20)
         ai_listener = rospy.Subscriber('ai_pub', String, on_ai_msg)
-        shoot_service = rospy.Service('shoot_service', ShootBall, self.shoot_ball)
-        move_service = rospy.Service('move_service', MovePlayer, self.move_player)
 
         ai_pubs = []
         for idx in range(1, number_of_players):
             ai_pubs.append(rospy.Publisher('ai_request' + str(idx), String, queue_size=20))
 
         balls = list()
+        self.balls = balls
         players = list()
+        self.players = players
         skulls = list()
 
         if online: socket, isClient = tcp_connect(ip_address)
@@ -89,7 +92,9 @@ class Game:
 
         goals = {"goal1": json.dumps(Data.Rect(goal1.rect).__dict__), "goal2": json.dumps(Data.Rect(goal2.rect).__dict__)}
 
-        rospy.sleep(1)
+        shoot_service = rospy.Service('shoot_service', ShootBall, self.shoot_ball)
+        move_service = rospy.Service('move_service', MovePlayer, self.move_player)
+        rospy.sleep(2)
 
         start_pub.publish(json.dumps(goals))
 
@@ -231,10 +236,14 @@ class Game:
 
             for (idx, _ai) in enumerate(ais):
                 ball_coord = balls[0].get_pos()
-                ai_state = SAIState((ball_coord[0], ball_coord[1]), p_coords)
+                ai_state = SAIState(Data.Rect(goal1.rect).__dict__, Data.Rect(goal2.rect).__dict__, (ball_coord[0], ball_coord[1]), p_coords)
                 jhi_est = json.dumps(ai_state.__dict__)
                 ai_pubs[idx].publish(jhi_est)
-                # _ai.do(ai_state)
+
+
+                _ai_state = ai.State(nearest_player, _ai.player, balls[0])
+                _ai_state.update()
+                _ai.do(_ai_state)
 
             for player in players:
                 player.collidingGoal(goal1)

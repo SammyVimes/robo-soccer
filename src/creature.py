@@ -177,6 +177,9 @@ class GeneralMovingBody(pygame.sprite.Sprite):
         """ Stop accelerating vertically. """
         self.stoppingy = True
 
+    def _getKicked(self, kicker):
+        self.getKicked(kicker, False)
+
     def getShooted(self, kicker, power=1):
         """ Ball is shooted by kicker. """
         pos = self.get_pos()
@@ -201,8 +204,9 @@ class GeneralMovingBody(pygame.sprite.Sprite):
             player_centre = kicker.getCentre()
             drawLine(self.surface, self.color, ball_centre, player_centre)
 
-
-    def getKicked(self, kicker):
+    def getKicked(self, kicker, stay=True):
+        if not stay:
+            return
         """ Ball is kicked by the kicker. """
         pos = self.get_pos()
         kicker_pos = kicker.get_pos()
@@ -313,6 +317,7 @@ class Player(GeneralMovingBody):
         self.type = type
         self.relax = 1 # 0 = sleep, 1 = desperate
         print(type)
+        self.time = 0
         if type==1:
             name = 'guy_'
             self.color = pygame.Color(0,100,230)
@@ -345,6 +350,7 @@ class Player(GeneralMovingBody):
         self.standing_direction = 'front'
 
     def go_to(self, pos):
+        self.time += 1
         player_pos = self.get_centre_pos()
         dist = general.distance(player_pos, pos)
 
@@ -357,11 +363,11 @@ class Player(GeneralMovingBody):
 
         max_dist = math.sqrt(general.width ** 2 + general.height ** 2)
         gate_freq = (1.0 * dist / max_dist) * 1 + 1
-
         sin_old = math.sin((self.time) / 180.0 * general.PI)
         self.time = self.time + 100 * gate_freq
         sin_new = math.sin((self.time) / 180.0 * general.PI)
 
+        return
         if sin_old * sin_new <= 0:
             diff_x = pos[0] - player_pos[0]
             diff_y = pos[1] - player_pos[1]
